@@ -55,9 +55,9 @@ export class RegisterComponent {
     this.alertMsg = 'Please wait! Your account is being created';
     this.alertColor = 'blue';
     this.inSubmission = true;
-    const {email, password} = this.registerForm.value;
+    const {email, password, name, age, phoneNumber} = this.registerForm.value;
     try{
-      await this.authService.createUser(this.registerForm.value)
+      await this.authService.createUser(email!, password!, name!, age!, phoneNumber!)
     }catch (e){
       console.error(e);
       this.alertMsg = 'An unexpected error ocurred';
@@ -68,5 +68,5 @@ export class RegisterComponent {
     this.inSubmission = false;
     this.alertMsg = 'User registered';
     this.alertColor = 'green';
-  }
+    }
 }

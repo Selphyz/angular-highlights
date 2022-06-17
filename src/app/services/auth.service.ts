@@ -3,33 +3,37 @@ import {createUserWithEmailAndPassword, getAuth, updateProfile} from "firebase/a
 import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/compat/firestore";
 import {AngularFireAuth} from "@angular/fire/compat/auth";
 import {IUser} from "../models/user.models";
-import {FormControl, ɵFormGroupValue, ɵTypedOrUntyped} from "@angular/forms";
+import {Observable} from "rxjs";
+import {map} from "rxjs/operators"
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private usersCollection: AngularFirestoreCollection<IUser>;
+  public isAuthenticated$: Observable<boolean>;
   constructor(
     private auth: AngularFireAuth,
     private db: AngularFirestore
   ) {
     this.usersCollection = db.collection('users');
+    auth.user.subscribe(console.log);
+    this.isAuthenticated$ = auth.user.pipe(map(user => !!user))
   }
-  public async createUser(userData: ɵTypedOrUntyped<{ password: FormControl<string | null>; phoneNumber: FormControl<string | null>; name: FormControl<string | null>; email: FormControl<string | null>; age: FormControl<string | null>; confirm_password: FormControl<string | null> }, ɵFormGroupValue<{ password: FormControl<string | null>; phoneNumber: FormControl<string | null>; name: FormControl<string | null>; email: FormControl<string | null>; age: FormControl<string | null>; confirm_password: FormControl<string | null> }>, any>) {
+  public async createUser(email: string, password: string, name: string, age: string, phoneNumber: string) {
     const auth = getAuth();
-    const userCred = await createUserWithEmailAndPassword(auth, userData.email!, userData.password!);
+    const userCred = await createUserWithEmailAndPassword(auth, email!, password!);
     if(!userCred.user){
       throw new Error("User not found");
     }
     await this.usersCollection.doc(userCred.user.uid).set({
-      name: userData.name!,
-      email: userData.email!,
-      age: userData.age!,
-      phoneNumber: userData.phoneNumber!
+      name: name!,
+      email: email!,
+      age: age!,
+      phoneNumber: phoneNumber!
     });
     await updateProfile(userCred.user, {
-      displayName: userData.name
+      displayName: name
     })
   }
 }
