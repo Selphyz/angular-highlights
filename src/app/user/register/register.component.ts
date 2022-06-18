@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { AngularFireAuth } from "@angular/fire/compat/auth";
-import { createUserWithEmailAndPassword, UserCredential, getAuth} from "firebase/auth";
-import {AngularFirestore} from "@angular/fire/compat/firestore";
+import {FormGroup, FormControl, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
+import {Validation} from "../../utils/utils";
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -45,7 +43,7 @@ export class RegisterComponent {
     password: this.password,
     confirm_password: this.confirm_password,
     phoneNumber: this.phoneNumber,
-  })
+  }, {validators: [Validation.match('password', 'confirm_password')]})
   showAlert = false;
   alertMsg = 'Please wait! Your account is being created';
   alertColor = 'blue';
